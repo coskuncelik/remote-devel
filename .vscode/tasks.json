@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "blinky: build (debug)",
+            "type": "shell",
+            "command": "cmake --preset debug && cmake --build --preset debug",
+            "options": { "cwd": "${workspaceFolder}/blinky" },
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+        },
+        {
+            "label": "blinky: build (release)",
+            "type": "shell",
+            "command": "cmake --preset release && cmake --build --preset release",
+            "options": { "cwd": "${workspaceFolder}/blinky" },
+            "group": "build",
+            "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+        },
+        {
+            "label": "blinky: clean",
+            "type": "shell",
+            "command": "rm -rf build",
+            "options": { "cwd": "${workspaceFolder}/blinky" },
+            "problemMatcher": []
+        },
+        {
+            "label": "blinky: flash & run (remote OpenOCD)",
+            "type": "shell",
+            "command": "gdb-multiarch -q -batch build/debug/blinky.elf -ex 'target extended-remote localhost:3333' -ex 'monitor reset halt' -ex load -ex compare-sections -ex 'monitor reset run' -ex disconnect",
+            "options": { "cwd": "${workspaceFolder}/blinky" },
+            "dependsOn": "blinky: build (debug)",
+            "problemMatcher": []
+        },
+        {
+            "label": "blinky: check tunnel",
+            "type": "shell",
+            "command": "if (exec 3<>/dev/tcp/127.0.0.1/4444) 2>/dev/null; then echo 'Tunnel is up (OpenOCD telnet port 4444 reachable).'; else echo 'Tunnel is down: run tools/debug-bridge.ps1 on your PC.'; exit 1; fi",
+            "problemMatcher": []
+        }
+    ]
+}

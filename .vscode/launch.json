@@ -1,0 +1,45 @@
+{
+    // NUCLEO-F411RE blinky - debugging through the reverse SSH tunnel.
+    // Before F5, on your PC (2 windows):
+    //   openocd -f board/st_nucleo_f4.cfg -c "bindto 127.0.0.1"
+    //   gh codespace ssh -c <codespace-name> -- -N -R 3333:127.0.0.1:3333 -R 4444:127.0.0.1:4444
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Blinky: Flash & Debug (remote OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",
+            "gdbPath": "gdb-multiarch",
+            "cwd": "${workspaceFolder}/blinky",
+            "executable": "${workspaceFolder}/blinky/build/debug/blinky.elf",
+            "svdFile": "${workspaceFolder}/blinky/STM32F411.svd",
+            "preLaunchTask": "blinky: build (debug)",
+            "runToEntryPoint": "main",
+            "overrideLaunchCommands": [
+                "monitor reset halt",
+                "load",
+                "monitor reset halt"
+            ],
+            "overrideRestartCommands": ["monitor reset halt"],
+            "overrideResetCommands": ["monitor reset halt"],
+            "showDevDebugOutput": "none"
+        },
+        {
+            "name": "Blinky: Attach to running board (no flash)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",
+            "gdbPath": "gdb-multiarch",
+            "cwd": "${workspaceFolder}/blinky",
+            "executable": "${workspaceFolder}/blinky/build/debug/blinky.elf",
+            "svdFile": "${workspaceFolder}/blinky/STM32F411.svd",
+            "overrideAttachCommands": ["monitor halt"],
+            "overrideRestartCommands": ["monitor reset halt"],
+            "overrideResetCommands": ["monitor reset halt"],
+            "showDevDebugOutput": "none"
+        }
+    ]
+}
